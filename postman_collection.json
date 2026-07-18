@@ -1,0 +1,220 @@
+{
+  "info": {
+    "name": "AI Comic Generator",
+    "description": "API collection for AI Comic Generator - Story + Image + Chat",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check status of Ollama and ComfyUI connections"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Chat - Simple",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Xin chào, bạn là ai?\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/chat",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chat"]
+            },
+            "description": "Chat đơn giản với LLM"
+          }
+        },
+        {
+          "name": "Chat - With System Prompt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Giải thích về machine learning\",\n  \"system_prompt\": \"Trả lời ngắn gọn trong 3 câu, dễ hiểu cho người không chuyên\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/chat",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chat"]
+            },
+            "description": "Chat với system prompt tùy chỉnh"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Story",
+      "item": [
+        {
+          "name": "Generate Story",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concept\": \"2 ninja đánh nhau trong mưa\",\n  \"num_panels\": 4,\n  \"style\": \"realistic photo, cinematic lighting\",\n  \"language\": \"vi\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/story",
+              "host": ["{{base_url}}"],
+              "path": ["api", "story"]
+            },
+            "description": "Generate story script only (không cần ComfyUI)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Image",
+      "item": [
+        {
+          "name": "Generate Image - Simple",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"a beautiful young asian woman, portrait, soft lighting, bokeh background, realistic photo, masterpiece, best quality\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/generate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Generate ảnh đơn giản - chỉ cần prompt (cần ComfyUI đang chạy)"
+          }
+        },
+        {
+          "name": "Generate Image - Full Params",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"a handsome young man standing in the rain, wearing a leather jacket, city street at night, neon lights reflection, cinematic, masterpiece, best quality, ultra detailed\",\n  \"negative_prompt\": \"ugly, blurry, low quality, deformed, disfigured, bad anatomy, watermark, text, cartoon, anime\",\n  \"width\": 1024,\n  \"height\": 1024,\n  \"steps\": 25,\n  \"cfg_scale\": 7.0,\n  \"seed\": -1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/generate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "generate"]
+            },
+            "description": "Generate ảnh với đầy đủ params tùy chỉnh"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comic",
+      "item": [
+        {
+          "name": "Generate Comic - Full Pipeline",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concept\": \"Một cô gái phát hiện mình có siêu năng lực trong lúc đang pha cà phê\",\n  \"num_panels\": 4,\n  \"style\": \"realistic photo, cinematic lighting, detailed skin texture\",\n  \"character_description\": \"young asian woman, long black hair, wearing white t-shirt, brown eyes\",\n  \"negative_prompt\": \"ugly, blurry, low quality, deformed, disfigured, bad anatomy, watermark, text, cartoon, anime\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/comic",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comic"]
+            },
+            "description": "Full pipeline: Story → Images → PDF (cần cả Ollama + ComfyUI)"
+          }
+        },
+        {
+          "name": "Generate Comic - Story Only",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concept\": \"Hai người bạn thời thơ ấu gặp lại nhau sau 10 năm\",\n  \"num_panels\": 6,\n  \"style\": \"realistic photo\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/comic/story-only",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comic", "story-only"]
+            },
+            "description": "Chỉ generate story script, không gen ảnh (không cần ComfyUI)"
+          }
+        },
+        {
+          "name": "Download PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/comic/download/Echoes of the Storm.pdf",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comic", "download", "Echoes of the Storm.pdf"]
+            },
+            "description": "Download PDF đã generate (thay tên file thực tế)"
+          }
+        }
+      ]
+    }
+  ]
+}
