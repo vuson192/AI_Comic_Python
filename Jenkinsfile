@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'ai-comic-python'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
-        DOCKER_REGISTRY = '' // ví dụ: 'your-registry.com/your-repo'
+        DOCKER_REGISTRY = '' // ví dụ: 'docker.io/vuson192'
     }
 
     stages {
@@ -14,42 +14,23 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
-                '''
-            }
-        }
-
-        stage('Lint') {
-            steps {
-                sh '''
-                    . venv/bin/activate
-                    pip install flake8
-                    flake8 app/ --max-line-length=120 --ignore=E501,W503
-                '''
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh '''
-                    . venv/bin/activate
-                    pip install pytest pytest-asyncio httpx
-                    pytest tests/ -v --tb=short || echo "No tests found, skipping..."
-                '''
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
                     dockerImage = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
                 }
+            }
+        }
+
+        stage('Lint & Test inside Container') {
+            steps {
+                sh """
+                    docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} sh -c '
+                        pip install flake8 pytest pytest-asyncio httpx &&
+                        flake8 app/ --max-line-length=120 --ignore=E501,W503 &&
+                        pytest tests/ -v --tb=short || echo "No tests found, skipping..."
+                    '
+                """
             }
         }
 
@@ -74,7 +55,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Deploying ${DOCKER_IMAGE}:${DOCKER_TAG}..."
-                    # Uncomment và sửa theo môi trường deploy của bạn:
+                    # Sửa theo môi trường deploy của bạn:
                     # docker stop ${DOCKER_IMAGE} || true
                     # docker rm ${DOCKER_IMAGE} || true
                     # docker run -d --name ${DOCKER_IMAGE} -p 8000:8000 --env-file .env ${DOCKER_IMAGE}:${DOCKER_TAG}
@@ -89,8 +70,6 @@ pipeline {
         }
         failure {
             echo "Build #${env.BUILD_NUMBER} failed!"
-            // Thêm notification nếu cần:
-            // slackSend channel: '#dev', message: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
         }
         always {
             cleanWs()
