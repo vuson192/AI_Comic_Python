@@ -9,9 +9,12 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = 'ai-comic-python'
+        // Đổi 'vuson192' thành username Docker Hub của bạn
+        DOCKERHUB_USER = 'vuson192'
+        DOCKER_IMAGE = "${DOCKERHUB_USER}/ai-comic-python"
         DOCKER_TAG = "${env.BUILD_NUMBER}"
-        DOCKER_REGISTRY = '' // ví dụ: 'docker.io/vuson192'
+        // ID của credentials đã tạo trong Jenkins (Username with password)
+        DOCKER_CREDENTIALS = 'dockerhub-credentials'
     }
 
     stages {
@@ -47,7 +50,8 @@ pipeline {
             }
             steps {
                 script {
-                    docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-registry-credentials') {
+                    // URL rỗng "" = Docker Hub (registry mặc định)
+                    docker.withRegistry('', DOCKER_CREDENTIALS) {
                         dockerImage.push("${DOCKER_TAG}")
                         dockerImage.push('latest')
                     }
