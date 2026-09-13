@@ -1,6 +1,13 @@
 pipeline {
     agent any
 
+    triggers {
+        // Poll GitHub mỗi 2 phút để phát hiện commit mới (dùng cho Jenkins local/VM).
+        // Khi nào expose Jenkins ra internet + cấu hình webhook thì githubPush() sẽ hoạt động.
+        pollSCM('H/2 * * * *')
+        githubPush()
+    }
+
     environment {
         DOCKER_IMAGE = 'ai-comic-python'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
