@@ -17,7 +17,7 @@ class ChatRequest(BaseModel):
         description="System prompt tùy chỉnh (không bắt buộc)"
     )
 
-
+"comment"
 class ChatResponse(BaseModel):
     reply: str
     model: str
