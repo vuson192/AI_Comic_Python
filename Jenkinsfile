@@ -45,9 +45,6 @@ pipeline {
         }
 
         stage('Push Docker Image') {
-            when {
-                branch 'main'
-            }
             steps {
                 script {
                     // URL rỗng "" = Docker Hub (registry mặc định)
@@ -60,9 +57,6 @@ pipeline {
         }
 
         stage('Deploy') {
-            when {
-                branch 'main'
-            }
             steps {
                 sh '''
                     echo "Deploying ${DOCKER_IMAGE}:${DOCKER_TAG}..."
